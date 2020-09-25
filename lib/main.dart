@@ -169,9 +169,15 @@ class MyAppState extends State<MyApp> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            data[index]['first_name'] +
-                                " " +
-                                data[index]['last_name'],
+                            data[index]['gender'] == 'Male'
+                                ? "Mr " +
+                                    data[index]['first_name'] +
+                                    " " +
+                                    data[index]['last_name']
+                                : "Ms " +
+                                    data[index]['first_name'] +
+                                    " " +
+                                    data[index]['last_name'],
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
