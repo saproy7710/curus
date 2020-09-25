@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:avatar_glow/avatar_glow.dart';
 
@@ -105,6 +106,19 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
+  var data;
+
+  // Loading the data from the local .json file
+  loadData() async {
+    var jsonString = await rootBundle.loadString('lib/data/mock_data.json');
+    setState(() => data = json.decode(jsonString));
+  }
+
+  @override
+  void initState() {
+    this.loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,91 +127,76 @@ class MyAppState extends State<MyApp> {
           child: Text("Curus Health"),
         ),
       ),
-      body: Center(
-        // Use future builder and DefaultAssetBundle to load the local JSON file
-        child: FutureBuilder(
-          future: DefaultAssetBundle.of(context)
-              .loadString('lib/data/mock_data.json'),
-          builder: (context, snapshot) {
-            // Decode the JSON
-            var data = json.decode(snapshot.data.toString());
-
-            return ListView.builder(
-              // Build the ListView
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.purple, Colors.red],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.red.withOpacity(0.4),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                        offset: Offset(3, 1),
-                      )
+      body: ListView.builder(
+        // Build the ListView
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.purple, Colors.red],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.4),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                  offset: Offset(3, 1),
+                )
+              ],
+              borderRadius: BorderRadius.all(
+                Radius.circular(20),
+              ),
+            ),
+            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 10.0,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child:
+                            Center(child: Image.network(data[index]['image'])),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            data[index]['first_name'] +
+                                " " +
+                                data[index]['last_name'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            child: Text(
+                              data[index]['description'],
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10.0,
-                      vertical: 10.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Center(
-                                  child: Image.network(data[index]['image'])),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  data[index]['first_name'] +
-                                      " " +
-                                      data[index]['last_name'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                  child: Flexible(
-                                    child: Text(
-                                      data[index]['description'],
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-              itemCount: data == null ? 0 : data.length,
-            );
-          },
-        ),
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: data == null ? 0 : data.length,
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 10.0,
